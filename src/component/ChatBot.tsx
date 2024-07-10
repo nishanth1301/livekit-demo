@@ -3,12 +3,9 @@ import "@livekit/components-styles";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import SendMessage from "./SendMessage";
+import LiveKitRoomWrapper from "./LiveKitRoomWrapper";
 
 const serverUrl = "ws://167.71.231.155:7880";
-
-function LiveKitRoomWrapper(props: any) {
-  return <LiveKitRoom {...props} />;
-}
 
 function ChatBot({ roomName, participantName, handleDisconnect }: any) {
   const [token, setToken] = useState<string | null>(null);
