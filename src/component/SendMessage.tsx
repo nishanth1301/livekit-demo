@@ -8,7 +8,6 @@ import {
   useRoomContext,
   useTracks,
 } from "@livekit/components-react";
-import axios from "axios";
 import {
   DataPacket_Kind,
   RemoteParticipant,
@@ -16,21 +15,22 @@ import {
   Track,
 } from "livekit-client";
 import { useCallback, useEffect, useState } from "react";
-import UserComponent from "./UserComponent";
 import toast from "react-hot-toast";
 import UserCard from "./UserCard";
+
+interface SendMessageProps {
+  mode: "video" | "audio" | "chat";
+  handleDisconnect: () => void;
+  getRemoteParticipantName: (name: string) => void;
+  handleAcceptOrReject: (isCheck: boolean) => void;
+}
 
 function SendMessage({
   mode,
   handleDisconnect,
   getRemoteParticipantName,
   handleAcceptOrReject,
-}: {
-  mode: string;
-  handleDisconnect: any;
-  getRemoteParticipantName: any;
-  handleAcceptOrReject: any;
-}) {
+}: SendMessageProps) {
   const room = useRoomContext();
   const tracks = useTracks(
     [
@@ -39,8 +39,10 @@ function SendMessage({
     ],
     { onlySubscribed: false }
   );
-  const [requestParticipantInfo, setRequestParticipantInfo] = useState<any>();
-  const [actionType, setActionType] = useState<any>();
+  const [requestParticipantInfo, setRequestParticipantInfo] = useState<
+    string | null
+  >(null);
+  const [actionType, setActionType] = useState<string | null>(null);
   const remoteParticipants: RemoteParticipant[] = useRemoteParticipants({
     updateOnlyOn: [
       RoomEvent.ParticipantConnected,
@@ -57,52 +59,27 @@ function SendMessage({
     ? remoteParticipant.identity
     : "No remote participant connected";
   getRemoteParticipantName(remoteIdentity);
+
   const checkFunc = () => {
     toast.custom(
-      (t) => {
-        return (
-          <>
-            <UserCard
-              name={requestParticipantInfo}
-              picUrl="https://via.placeholder.com/150"
-              handleAcceptOrReject={handleAcceptOrReject}
-            />
-          </>
-        );
-      },
-      {
-        duration: 10000, //TODO modify as per need
-        position: "top-right",
-      }
+      (t) => (
+        <UserCard
+          name={requestParticipantInfo!}
+          picUrl="https://via.placeholder.com/150"
+          handleAcceptOrReject={handleAcceptOrReject}
+        />
+      ),
+      { duration: 10000, position: "top-right" }
     );
   };
-  // const sendMessage = useCallback(
-  //   async (
-  //     topic: "AUDIO" | "VIDEO" | "DISCONNECT" | "ACCEPT",
-  //     requestedBy: string
-  //   ) => {
-  //     const currentName = requestedBy;
-  //     if (currentName) {
-  //       await axios.post("http://192.168.0.41:3002/livekit/sendMessage", {
-  //         roomName: room?.name,
-  //         message: `${room?.name}-${room.localParticipant.identity}`,
-  //         dId: [remoteIdentity],
-  //         topic: topic,
-  //       });
-  //     }
-  //   },
-  //   [room.localParticipant.identity, room?.name, senderName]
-  // );
 
   const acceptModal = () => {
     checkFunc();
   };
 
   useEffect(() => {
-    if (requestParticipantInfo) {
-      if (actionType === "video") {
-        acceptModal();
-      }
+    if (requestParticipantInfo && actionType === "video") {
+      acceptModal();
     }
   }, [requestParticipantInfo, actionType]);
 
@@ -138,10 +115,7 @@ function SendMessage({
             variation="verbose"
             controls={{ screenShare: false, leave: false }}
           />
-          <DisconnectButton
-            stopTracks={true}
-            onClick={() => handleDisconnect()}
-          >
+          <DisconnectButton stopTracks={true} onClick={handleDisconnect}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="16"
@@ -160,7 +134,7 @@ function SendMessage({
                 d="M8.78 7.47a.75.75 0 0 1 0 1.06l-2.25 2.25a.75.75 0 1 1-1.06-1.06l.97-.97H1.75a.75.75 0 0 1 0-1.5h4.69l-.97-.97a.75.75 0 0 1 1.06-1.06l2.25 2.25Z"
                 clipRule="evenodd"
               ></path>
-            </svg>{" "}
+            </svg>
             Leave
           </DisconnectButton>
         </div>
@@ -177,4 +151,5 @@ function SendMessage({
     )
   );
 }
+
 export default SendMessage;

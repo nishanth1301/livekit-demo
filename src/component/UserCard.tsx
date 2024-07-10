@@ -1,8 +1,13 @@
-import React from "react";
-import { Card, Button, Row, Col } from "react-bootstrap";
+import { Button, Card, Col, Row } from "react-bootstrap";
 import { SlCallEnd, SlCallIn } from "react-icons/sl";
 
-const UserCard = ({ name, picUrl, handleAcceptOrReject }: any) => {
+interface UserCardProps {
+  name: string;
+  picUrl: string;
+  handleAcceptOrReject: (isCheck: boolean) => void;
+}
+
+const UserCard = ({ name, picUrl, handleAcceptOrReject }: UserCardProps) => {
   return (
     <Card style={{ width: "18rem", backgroundColor: "#E7D4B5" }}>
       <Card.Body>
@@ -22,11 +27,11 @@ const UserCard = ({ name, picUrl, handleAcceptOrReject }: any) => {
         <Button
           variant="success"
           onClick={() => handleAcceptOrReject(true)}
-          className="me-2 "
+          className="me-2"
         >
           <SlCallIn />
         </Button>
-        <Button variant="danger" onClick={handleAcceptOrReject(true)}>
+        <Button variant="danger" onClick={() => handleAcceptOrReject(false)}>
           <SlCallEnd />
         </Button>
       </Card.Body>

@@ -1,10 +1,9 @@
 import { LiveKitRoom } from "@livekit/components-react";
 import "@livekit/components-styles";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import SendMessage from "./SendMessage";
 import toast from "react-hot-toast";
-import UserCard from "./UserCard";
 
 interface LiveKitRoomWrapperProps {
   video: boolean;
@@ -20,13 +19,26 @@ interface LiveKitRoomWrapperProps {
 function LiveKitRoomWrapper(props: LiveKitRoomWrapperProps) {
   return <LiveKitRoom {...props} />;
 }
+
 const serverUrl = "ws://167.71.231.155:7880";
 
-function ChatBot({ roomName, participantName, handleDisconnect }: any) {
+interface ChatBotProps {
+  roomName: string;
+  participantName: string;
+  handleDisconnect: () => void;
+}
+
+function ChatBot({
+  roomName,
+  participantName,
+  handleDisconnect,
+}: ChatBotProps) {
   const [token, setToken] = useState<string | null>(null);
   const [messageInput, setMessageInput] = useState("");
   const [mode, setMode] = useState<"video" | "audio" | "chat">("chat");
-  const [messages, setMessages] = useState<any[]>([]);
+  const [messages, setMessages] = useState<
+    { sender: string; content: string }[]
+  >([]);
   const [remoteUser, setRemoteUser] = useState<string>("");
 
   useEffect(() => {
@@ -34,10 +46,7 @@ function ChatBot({ roomName, participantName, handleDisconnect }: any) {
       try {
         const response = await axios.post(
           "http://192.168.0.41:3002/livekit/tokenGenerate",
-          {
-            roomName,
-            participantName,
-          }
+          { roomName, participantName }
         );
         if (response.data.token) {
           console.log("Token received:", response.data.token);
@@ -57,49 +66,47 @@ function ChatBot({ roomName, participantName, handleDisconnect }: any) {
   }, [roomName, participantName]);
 
   const handleSendMessage = async () => {
-    // Implement the logic to send a message using LiveKit's data transmission
-
-    // const data = await axios.post(
-    //   "http://192.168.0.41:3002/livekit/sendMessage",
-    //   {
-    //     roomName,
-    //     message: messageInput,
-    //   }
-    // );
-    // console.log(data);
-    console.log("Message sent:", messageInput);
-    setMessages((prevMessages) => [
-      ...prevMessages,
-      { sender: participantName, content: messageInput },
-    ]);
-    setMessageInput("");
+    try {
+      // Implement the logic to send a message using LiveKit's data transmission
+      // const data = await axios.post(
+      //   "http://192.168.0.41:3002/livekit/sendMessage",
+      //   { roomName, message: messageInput }
+      // );
+      // console.log(data);
+      console.log("Message sent:", messageInput);
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        { sender: participantName, content: messageInput },
+      ]);
+      setMessageInput("");
+    } catch (error) {
+      console.error("Error sending message:", error);
+    }
   };
 
-  const handleIncomingCall = async (topic: any) => {
-    setMode(topic);
+  const handleIncomingCall = async (topic: string) => {
+    setMode(topic as "video" | "audio" | "chat");
     if (remoteUser === "No remote participant connected") {
-      console.log("user is offline");
-      toast.error("user is offline", {
-        style: {
-          border: "1px solid #4CAF50",
-          padding: "16px",
-        },
-        iconTheme: {
-          primary: "#4CAF50",
-          secondary: "#FFFAEE",
-        },
+      toast.error("User is offline", {
+        style: { border: "1px solid #4CAF50", padding: "16px" },
+        iconTheme: { primary: "#4CAF50", secondary: "#FFFAEE" },
         duration: 10000,
       });
     } else {
-      await axios.post("http://192.168.0.41:3002/livekit/sendMessage", {
-        roomName: roomName,
-        localParticipant: participantName,
-        message: `${roomName}-${participantName}`,
-        dId: [remoteUser],
-        topic: topic,
-      });
+      try {
+        await axios.post("http://192.168.0.41:3002/livekit/sendMessage", {
+          roomName,
+          localParticipant: participantName,
+          message: `${roomName}-${participantName}`,
+          dId: [remoteUser],
+          topic,
+        });
+      } catch (error) {
+        console.error("Error sending incoming call message:", error);
+      }
     }
   };
+
   const [isAudio, setAudio] = useState<boolean>(false);
   const [isVideo, setVideo] = useState<boolean>(false);
 
@@ -109,14 +116,16 @@ function ChatBot({ roomName, participantName, handleDisconnect }: any) {
       setVideo(true);
     }
   };
-  const getRemoteParticipantName = (participantName: any) => {
+
+  const getRemoteParticipantName = useCallback((participantName: string) => {
     setRemoteUser(participantName);
-  };
+  }, []);
+
   return token ? (
     <div>
       <LiveKitRoomWrapper
-        video={isVideo}
-        audio={isAudio}
+        video={false}
+        audio={false}
         token={token}
         connect={true}
         serverUrl={serverUrl}
