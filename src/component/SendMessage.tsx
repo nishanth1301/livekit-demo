@@ -15,10 +15,17 @@ import {
   Track,
 } from "livekit-client";
 import { useCallback, useEffect, useState } from "react";
+import UserComponent from "./UserComponent";
+import toast from "react-hot-toast";
 
-function SendMessage({ mode }: { mode: string }) {
+function SendMessage({
+  mode,
+  handleDisconnect,
+}: {
+  mode: string;
+  handleDisconnect: any;
+}) {
   const room = useRoomContext();
-  console.log(mode, "mode");
   room.remoteParticipants.forEach((item) => console.log(item));
   const tracks = useTracks(
     [
@@ -28,10 +35,11 @@ function SendMessage({ mode }: { mode: string }) {
     { onlySubscribed: false }
   );
   const [senderName, setSenderName] = useState<string | undefined>();
-
+  const [requestParticipantInfo, setRequestParticipantInfo] = useState<any>();
+  const [actionType, setActionType] = useState<any>();
   const sendMessage = useCallback(
     async (
-      topic: "AUDIO" | "VIDEO" | "DISCONNECT",
+      topic: "AUDIO" | "VIDEO" | "DISCONNECT" | "ACCEPT",
       name?: string,
       sessionId?: string
     ) => {
@@ -39,9 +47,7 @@ function SendMessage({ mode }: { mode: string }) {
       if (currentName) {
         await axios.post("http://192.168.0.41:3002/livekit/sendMessage", {
           roomName: room?.name,
-          message: `${sessionId || room?.name}-${
-            room.localParticipant.identity
-          }`,
+          message: `${room?.name}-${room.localParticipant.identity}`,
           dId: [currentName],
           topic: topic,
         });
@@ -49,6 +55,28 @@ function SendMessage({ mode }: { mode: string }) {
     },
     [room.localParticipant.identity, room?.name, senderName]
   );
+  const acceptModal = (requestedUser: RemoteParticipant) => {
+    toast.success("message", {
+      style: {
+        border: "1px solid #4caf50",
+        padding: "16px",
+        color: "#4caf50",
+      },
+      iconTheme: {
+        primary: "#4caf50",
+        secondary: "#FFFAEE",
+      },
+      duration: 10000,
+    });
+  };
+  useEffect(() => {
+    if (requestParticipantInfo) {
+      if (actionType === "AUDIO") {
+        acceptModal(requestParticipantInfo);
+      }
+    }
+  }, [requestParticipantInfo, actionType]);
+
   const handleDataReceived = useCallback(
     (
       payload: Uint8Array,
@@ -58,8 +86,9 @@ function SendMessage({ mode }: { mode: string }) {
     ) => {
       const decoder = new TextDecoder();
       const data = decoder.decode(payload);
-      console.log("Message received:", data);
-      // Handle the decoded message, e.g., update state to display messages
+      const [participantIdentity, action] = data.split("-");
+      setRequestParticipantInfo(participantIdentity);
+      setActionType(action);
     },
     [room]
   );
@@ -81,7 +110,7 @@ function SendMessage({ mode }: { mode: string }) {
           />
           <DisconnectButton
             stopTracks={true}
-            onClick={() => console.log("Leave")}
+            onClick={() => handleDisconnect()}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"

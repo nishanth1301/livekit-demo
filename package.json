@@ -18,7 +18,10 @@
     "react-bootstrap": "^2.10.4",
     "react-dom": "^18.3.1",
     "react-hot-toast": "^2.4.1",
+<<<<<<< HEAD
     "react-icons": "^5.2.1",
+=======
+>>>>>>> 933e66a3f5dbce4a6083477c99c84a9dd5dc0223
     "react-scripts": "5.0.1",
     "typescript": "^5.5.3",
     "web-vitals": "^2.1.4"

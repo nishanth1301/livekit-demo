@@ -11,7 +11,7 @@ function LiveKitRoomWrapper(props: any) {
   return <LiveKitRoom {...props} />;
 }
 
-function ChatBot({ roomName, participantName }: any) {
+function ChatBot({ roomName, participantName, handleDisconnect }: any) {
   const [token, setToken] = useState<string | null>(null);
   const [messageInput, setMessageInput] = useState("");
   const [mode, setMode] = useState<"video" | "audio" | "chat">("chat");
@@ -75,7 +75,7 @@ function ChatBot({ roomName, participantName }: any) {
         data-lk-theme="default"
         style={{ flex: 1 }}
       >
-        <SendMessage mode={mode} />
+        <SendMessage mode={mode} handleDisconnect={handleDisconnect} />
       </LiveKitRoomWrapper>
       <div style={{ padding: "10px", borderTop: "1px solid #ccc" }}>
         <div>
