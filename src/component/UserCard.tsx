@@ -1,4 +1,5 @@
 import React from "react";
+import Avatar from "react-avatar";
 import { Card, Button, Row, Col } from "react-bootstrap";
 import toast from "react-hot-toast";
 import { SlCallEnd, SlCallIn } from "react-icons/sl";
@@ -16,16 +17,24 @@ const UserCard = ({
   toastId,
 }: UserCardProps) => {
   return (
-    <Card style={{ width: "18rem", backgroundColor: "#E7D4B5" }}>
+    <Card
+      style={{
+        width: "18rem",
+        backgroundColor: "#F6F5F5",
+        border: "none",
+        boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px",
+      }}
+    >
       <Card.Body>
         <Row className="align-items-center mb-3">
           <Col xs="auto">
-            <Card.Img
+            {/* <Card.Img
               variant="top"
               src={picUrl}
               className="rounded-circle"
               style={{ width: "50px", height: "50px" }}
-            />
+            /> */}
+            <Avatar value="76%" size="40" name={name} round={true} />
           </Col>
           <Col>
             <Card.Title>{name}</Card.Title>
