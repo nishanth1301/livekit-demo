@@ -1,8 +1,9 @@
 import { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
-import ChatBot from "./component/ChatBot";
+// import ChatBot from "./component/ChatBot";
 import { Toaster } from "react-hot-toast";
+import ChatRoom from "./Chat/ChatRoom";
 
 function App() {
   const [roomName, setRoomName] = useState("");
@@ -23,7 +24,7 @@ function App() {
     <div className="App">
       <Toaster position="top-right" reverseOrder={false} /> {/* Add Toaster */}
       {isJoined ? (
-        <ChatBot
+        <ChatRoom
           roomName={roomName}
           participantName={participantName}
           handleDisconnect={handleDisconnect}
