@@ -34,12 +34,6 @@ function ChatBot({
   handleDisconnect,
 }: ChatBotProps) {
   const [token, setToken] = useState<string | null>(null);
-  const [messageInput, setMessageInput] = useState("");
-  const [mode, setMode] = useState<"video" | "audio" | "chat">("chat");
-  const [messages, setMessages] = useState<
-    { sender: string; content: string }[]
-  >([]);
-  const [remoteUser, setRemoteUser] = useState<string>("");
   const [isAudio, setAudio] = useState<boolean>(false);
   const [isVideo, setVideo] = useState<boolean>(false);
 
@@ -67,56 +61,6 @@ function ChatBot({
     fetchToken();
   }, [roomName, participantName]);
 
-  const handleSendMessage = async () => {
-    try {
-      console.log("Message sent:", messageInput);
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        { sender: participantName, content: messageInput },
-      ]);
-      setMessageInput("");
-    } catch (error) {
-      console.error("Error sending message:", error);
-    }
-  };
-
-  const handleIncomingCall = async (topic: string) => {
-    setMode(topic as "video" | "audio" | "chat");
-    if (remoteUser === "No remote participant connected") {
-      toast.error("User is offline", {
-        style: { border: "1px solid #4CAF50", padding: "16px" },
-        iconTheme: { primary: "#4CAF50", secondary: "#FFFAEE" },
-        duration: 10000,
-      });
-    } else {
-      try {
-        await axios.post("http://192.168.0.41:3002/livekit/sendMessage", {
-          roomName,
-          localParticipant: participantName,
-          message: `${roomName}-${participantName}`,
-          dId: [remoteUser],
-          topic,
-        });
-      } catch (error) {
-        console.error("Error sending incoming call message:", error);
-      }
-    }
-  };
-
-  const handleAcceptOrReject = (isCheck: boolean) => {
-    if (isCheck) {
-      setAudio(true);
-      setVideo(true);
-      setMode("video");
-    } else {
-      // Handle call rejection if needed
-    }
-  };
-
-  const getRemoteParticipantName = useCallback((participantName: string) => {
-    setRemoteUser(participantName);
-  }, []);
-
   return token ? (
     <div>
       <LiveKitRoomWrapper
@@ -129,45 +73,11 @@ function ChatBot({
         style={{ flex: 1 }}
       >
         <SendMessage
-          mode={mode}
+          setAudio={setAudio}
+          setVideo={setVideo}
           handleDisconnect={handleDisconnect}
-          getRemoteParticipantName={getRemoteParticipantName}
-          handleAcceptOrReject={handleAcceptOrReject}
         />
       </LiveKitRoomWrapper>
-      <div style={{ padding: "10px", borderTop: "1px solid #ccc" }}>
-        <div>
-          <button onClick={() => handleIncomingCall("video")}>Video</button>
-          <button onClick={() => setMode("audio")}>Audio</button>
-          <button onClick={() => setMode("chat")}>Chat</button>
-        </div>
-        {mode === "chat" && (
-          <div style={{ marginTop: "10px" }}>
-            <div
-              style={{
-                height: "200px",
-                overflowY: "scroll",
-                marginBottom: "10px",
-              }}
-            >
-              {messages.map((message, index) => (
-                <div key={index}>
-                  <strong>{message.sender}:</strong> {message.content}
-                </div>
-              ))}
-            </div>
-            <div style={{ display: "flex" }}>
-              <input
-                type="text"
-                value={messageInput}
-                onChange={(e) => setMessageInput(e.target.value)}
-                style={{ flex: 1 }}
-              />
-              <button onClick={handleSendMessage}>Send</button>
-            </div>
-          </div>
-        )}
-      </div>
     </div>
   ) : null;
 }
