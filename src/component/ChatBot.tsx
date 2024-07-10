@@ -27,6 +27,7 @@ function ChatBot({ roomName, participantName, handleDisconnect }: any) {
   const [messageInput, setMessageInput] = useState("");
   const [mode, setMode] = useState<"video" | "audio" | "chat">("chat");
   const [messages, setMessages] = useState<any[]>([]);
+  const [remoteUser, setRemoteUser] = useState<string>("");
 
   useEffect(() => {
     const fetchToken = async () => {
@@ -73,47 +74,54 @@ function ChatBot({ roomName, participantName, handleDisconnect }: any) {
     ]);
     setMessageInput("");
   };
-  const connect = () => {};
-  const disconnect = () => {};
-  const checkFunc = () => {
-    setMode("video");
-    toast.custom(
-      (t) => {
-        return (
-          <>
-            <UserCard
-              name="Name"
-              picUrl="https://via.placeholder.com/150"
-              onConnect={connect}
-              onReject={disconnect}
-            />
-          </>
-        );
-      },
-      {
-        duration: 10000, //TODO modify as per need
-        position: "top-right",
-      }
-    );
-  };
 
+  const handleIncomingCall = async (topic: any) => {
+    setMode(topic);
+    if (remoteUser === "No remote participant connected") {
+      console.log("user is offline");
+    } else {
+      await axios.post("http://192.168.0.41:3002/livekit/sendMessage", {
+        roomName: roomName,
+        localParticipant: participantName,
+        message: `${roomName}-${participantName}`,
+        dId: [remoteUser],
+        topic: topic,
+      });
+    }
+  };
+  const [isAudio, setAudio] = useState<boolean>(false);
+  const [isVideo, setVideo] = useState<boolean>(false);
+
+  const handleAcceptOrReject = (isCheck: boolean) => {
+    if (isCheck) {
+      setAudio(true);
+      setVideo(true);
+    }
+  };
+  const getRemoteParticipantName = (participantName: any) => {
+    setRemoteUser(participantName);
+  };
   return token ? (
-    // <div style={{ display: "flex", height: "100vh", flexDirection: "column" }}>
     <div>
       <LiveKitRoomWrapper
-        video={false}
-        audio={false}
+        video={isVideo}
+        audio={isAudio}
         token={token}
         connect={true}
         serverUrl={serverUrl}
         data-lk-theme="default"
         style={{ flex: 1 }}
       >
-        <SendMessage mode={mode} handleDisconnect={handleDisconnect} />
+        <SendMessage
+          mode={mode}
+          handleDisconnect={handleDisconnect}
+          getRemoteParticipantName={getRemoteParticipantName}
+          handleAcceptOrReject={handleAcceptOrReject}
+        />
       </LiveKitRoomWrapper>
       <div style={{ padding: "10px", borderTop: "1px solid #ccc" }}>
         <div>
-          <button onClick={() => checkFunc()}>Video</button>
+          <button onClick={() => handleIncomingCall("video")}>Video</button>
           <button onClick={() => setMode("audio")}>Audio</button>
           <button onClick={() => setMode("chat")}>Chat</button>
         </div>

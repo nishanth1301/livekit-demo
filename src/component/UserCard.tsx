@@ -2,7 +2,7 @@ import React from "react";
 import { Card, Button, Row, Col } from "react-bootstrap";
 import { SlCallEnd, SlCallIn } from "react-icons/sl";
 
-const UserCard = ({ name, picUrl, onConnect, onReject }: any) => {
+const UserCard = ({ name, picUrl, handleAcceptOrReject }: any) => {
   return (
     <Card style={{ width: "18rem", backgroundColor: "#E7D4B5" }}>
       <Card.Body>
@@ -17,13 +17,16 @@ const UserCard = ({ name, picUrl, onConnect, onReject }: any) => {
           </Col>
           <Col>
             <Card.Title>{name}</Card.Title>
-            {/* <Card.Text>is {type}calling</Card.Text> */}
           </Col>
         </Row>
-        <Button variant="success" onClick={onConnect} className="me-2 ">
+        <Button
+          variant="success"
+          onClick={() => handleAcceptOrReject(true)}
+          className="me-2 "
+        >
           <SlCallIn />
         </Button>
-        <Button variant="danger" onClick={onReject}>
+        <Button variant="danger" onClick={handleAcceptOrReject(true)}>
           <SlCallEnd />
         </Button>
       </Card.Body>

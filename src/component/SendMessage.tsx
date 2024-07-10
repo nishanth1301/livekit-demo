@@ -4,6 +4,7 @@ import {
   DisconnectButton,
   ParticipantTile,
   RoomAudioRenderer,
+  useRemoteParticipants,
   useRoomContext,
   useTracks,
 } from "@livekit/components-react";
@@ -17,16 +18,20 @@ import {
 import { useCallback, useEffect, useState } from "react";
 import UserComponent from "./UserComponent";
 import toast from "react-hot-toast";
+import UserCard from "./UserCard";
 
 function SendMessage({
   mode,
   handleDisconnect,
+  getRemoteParticipantName,
+  handleAcceptOrReject,
 }: {
   mode: string;
   handleDisconnect: any;
+  getRemoteParticipantName: any;
+  handleAcceptOrReject: any;
 }) {
   const room = useRoomContext();
-  room.remoteParticipants.forEach((item) => console.log(item));
   const tracks = useTracks(
     [
       { source: Track.Source.Camera, withPlaceholder: true },
@@ -37,43 +42,67 @@ function SendMessage({
   const [senderName, setSenderName] = useState<string | undefined>();
   const [requestParticipantInfo, setRequestParticipantInfo] = useState<any>();
   const [actionType, setActionType] = useState<any>();
-  const sendMessage = useCallback(
-    async (
-      topic: "AUDIO" | "VIDEO" | "DISCONNECT" | "ACCEPT",
-      name?: string,
-      sessionId?: string
-    ) => {
-      const currentName = name || senderName || "";
-      if (currentName) {
-        await axios.post("http://192.168.0.41:3002/livekit/sendMessage", {
-          roomName: room?.name,
-          message: `${room?.name}-${room.localParticipant.identity}`,
-          dId: [currentName],
-          topic: topic,
-        });
+  const remoteParticipants: RemoteParticipant[] = useRemoteParticipants({
+    updateOnlyOn: [
+      RoomEvent.ParticipantConnected,
+      RoomEvent.ParticipantDisconnected,
+      RoomEvent.Disconnected,
+      RoomEvent.Reconnected,
+      RoomEvent.ParticipantMetadataChanged,
+      RoomEvent.ParticipantNameChanged,
+    ],
+  });
+  const remoteParticipant =
+    remoteParticipants.length === 1 ? remoteParticipants[0] : null;
+  const remoteIdentity = remoteParticipant
+    ? remoteParticipant.identity
+    : "No remote participant connected";
+  getRemoteParticipantName(remoteIdentity);
+  const checkFunc = () => {
+    toast.custom(
+      (t) => {
+        return (
+          <>
+            <UserCard
+              name={requestParticipantInfo}
+              picUrl="https://via.placeholder.com/150"
+              handleAcceptOrReject={handleAcceptOrReject}
+            />
+          </>
+        );
+      },
+      {
+        duration: 10000, //TODO modify as per need
+        position: "top-right",
       }
-    },
-    [room.localParticipant.identity, room?.name, senderName]
-  );
-  const acceptModal = (requestedUser: RemoteParticipant) => {
-    toast.success("message", {
-      style: {
-        border: "1px solid #4caf50",
-        padding: "16px",
-        color: "#4caf50",
-      },
-      iconTheme: {
-        primary: "#4caf50",
-        secondary: "#FFFAEE",
-      },
-      duration: 10000,
-    });
+    );
+  };
+  // const sendMessage = useCallback(
+  //   async (
+  //     topic: "AUDIO" | "VIDEO" | "DISCONNECT" | "ACCEPT",
+  //     requestedBy: string
+  //   ) => {
+  //     const currentName = requestedBy;
+  //     if (currentName) {
+  //       await axios.post("http://192.168.0.41:3002/livekit/sendMessage", {
+  //         roomName: room?.name,
+  //         message: `${room?.name}-${room.localParticipant.identity}`,
+  //         dId: [remoteIdentity],
+  //         topic: topic,
+  //       });
+  //     }
+  //   },
+  //   [room.localParticipant.identity, room?.name, senderName]
+  // );
+
+  const acceptModal = () => {
+    checkFunc();
   };
 
   useEffect(() => {
     if (requestParticipantInfo) {
-      if (actionType === "AUDIO") {
-        acceptModal(requestParticipantInfo);
+      if (actionType === "video") {
+        acceptModal();
       }
     }
   }, [requestParticipantInfo, actionType]);
@@ -87,9 +116,10 @@ function SendMessage({
     ) => {
       const decoder = new TextDecoder();
       const data = decoder.decode(payload);
-      const [participantIdentity, action] = data.split("-");
-      setRequestParticipantInfo(participantIdentity);
+      const [localParticipant, participantIdentity, action] = data.split("-");
+      console.log(data.split("-"));
       setActionType(action);
+      setRequestParticipantInfo(localParticipant);
     },
     [room]
   );
