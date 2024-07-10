@@ -69,6 +69,7 @@ function SendMessage({
       duration: 10000,
     });
   };
+
   useEffect(() => {
     if (requestParticipantInfo) {
       if (actionType === "AUDIO") {

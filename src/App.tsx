@@ -1,4 +1,5 @@
 import { useState } from "react";
+import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
 import ChatBot from "./component/ChatBot";
 import { Toaster } from "react-hot-toast";
@@ -15,6 +16,9 @@ function App() {
   const handleDisconnect = () => {
     setIsJoined(false);
   };
+
+  const connect = () => {};
+  const disconnect = () => {};
   return (
     <div className="App">
       <Toaster position="top-right" reverseOrder={false} /> {/* Add Toaster */}

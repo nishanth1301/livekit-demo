@@ -3,13 +3,11 @@ import "@livekit/components-styles";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import SendMessage from "./SendMessage";
-import { Toast } from "react-hot-toast";
+import toast, { Toast } from "react-hot-toast";
+import LiveKitRoomWrapper from "./LivekitRoomWrapper";
+import UserCard from "./UserCard";
 
 const serverUrl = "ws://167.71.231.155:7880";
-
-function LiveKitRoomWrapper(props: any) {
-  return <LiveKitRoom {...props} />;
-}
 
 function ChatBot({ roomName, participantName, handleDisconnect }: any) {
   const [token, setToken] = useState<string | null>(null);
@@ -62,6 +60,29 @@ function ChatBot({ roomName, participantName, handleDisconnect }: any) {
     ]);
     setMessageInput("");
   };
+  const connect = () => {};
+  const disconnect = () => {};
+  const checkFunc = () => {
+    setMode("video");
+    toast.custom(
+      (t) => {
+        return (
+          <>
+            <UserCard
+              name="Name"
+              picUrl="https://via.placeholder.com/150"
+              onConnect={connect}
+              onReject={disconnect}
+            />
+          </>
+        );
+      },
+      {
+        duration: 10000, //TODO modify as per need
+        position: "top-right",
+      }
+    );
+  };
 
   return token ? (
     // <div style={{ display: "flex", height: "100vh", flexDirection: "column" }}>
@@ -79,7 +100,7 @@ function ChatBot({ roomName, participantName, handleDisconnect }: any) {
       </LiveKitRoomWrapper>
       <div style={{ padding: "10px", borderTop: "1px solid #ccc" }}>
         <div>
-          <button onClick={() => setMode("video")}>Video</button>
+          <button onClick={() => checkFunc()}>Video</button>
           <button onClick={() => setMode("audio")}>Audio</button>
           <button onClick={() => setMode("chat")}>Chat</button>
         </div>
