@@ -3,14 +3,23 @@ import "@livekit/components-styles";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import SendMessage from "./SendMessage";
-<<<<<<< HEAD
-import toast, { Toast } from "react-hot-toast";
-import LiveKitRoomWrapper from "./LivekitRoomWrapper";
+import toast from "react-hot-toast";
 import UserCard from "./UserCard";
-=======
-import LiveKitRoomWrapper from "./LiveKitRoomWrapper";
->>>>>>> 6c9b12a565ac7557d638f82320e49483186dd8e2
 
+interface LiveKitRoomWrapperProps {
+  video: boolean;
+  audio: boolean;
+  token: string;
+  connect: boolean;
+  serverUrl: string;
+  children?: React.ReactNode;
+  "data-lk-theme"?: string;
+  style?: React.CSSProperties;
+}
+
+function LiveKitRoomWrapper(props: LiveKitRoomWrapperProps) {
+  return <LiveKitRoom {...props} />;
+}
 const serverUrl = "ws://167.71.231.155:7880";
 
 function ChatBot({ roomName, participantName, handleDisconnect }: any) {
