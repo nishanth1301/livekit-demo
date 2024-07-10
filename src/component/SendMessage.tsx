@@ -39,7 +39,6 @@ function SendMessage({
     ],
     { onlySubscribed: false }
   );
-  const [senderName, setSenderName] = useState<string | undefined>();
   const [requestParticipantInfo, setRequestParticipantInfo] = useState<any>();
   const [actionType, setActionType] = useState<any>();
   const remoteParticipants: RemoteParticipant[] = useRemoteParticipants({

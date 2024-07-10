@@ -79,6 +79,17 @@ function ChatBot({ roomName, participantName, handleDisconnect }: any) {
     setMode(topic);
     if (remoteUser === "No remote participant connected") {
       console.log("user is offline");
+      toast.error("user is offline", {
+        style: {
+          border: "1px solid #4CAF50",
+          padding: "16px",
+        },
+        iconTheme: {
+          primary: "#4CAF50",
+          secondary: "#FFFAEE",
+        },
+        duration: 10000,
+      });
     } else {
       await axios.post("http://192.168.0.41:3002/livekit/sendMessage", {
         roomName: roomName,
