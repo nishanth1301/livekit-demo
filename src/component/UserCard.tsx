@@ -1,4 +1,5 @@
-import { Button, Card, Col, Row } from "react-bootstrap";
+import React from "react";
+import { Card, Button, Row, Col } from "react-bootstrap";
 import { SlCallEnd, SlCallIn } from "react-icons/sl";
 
 interface UserCardProps {

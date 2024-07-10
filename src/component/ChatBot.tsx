@@ -40,6 +40,8 @@ function ChatBot({
     { sender: string; content: string }[]
   >([]);
   const [remoteUser, setRemoteUser] = useState<string>("");
+  const [isAudio, setAudio] = useState<boolean>(false);
+  const [isVideo, setVideo] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchToken = async () => {
@@ -67,12 +69,6 @@ function ChatBot({
 
   const handleSendMessage = async () => {
     try {
-      // Implement the logic to send a message using LiveKit's data transmission
-      // const data = await axios.post(
-      //   "http://192.168.0.41:3002/livekit/sendMessage",
-      //   { roomName, message: messageInput }
-      // );
-      // console.log(data);
       console.log("Message sent:", messageInput);
       setMessages((prevMessages) => [
         ...prevMessages,
@@ -107,13 +103,13 @@ function ChatBot({
     }
   };
 
-  const [isAudio, setAudio] = useState<boolean>(false);
-  const [isVideo, setVideo] = useState<boolean>(false);
-
   const handleAcceptOrReject = (isCheck: boolean) => {
     if (isCheck) {
       setAudio(true);
       setVideo(true);
+      setMode("video");
+    } else {
+      // Handle call rejection if needed
     }
   };
 
@@ -124,8 +120,8 @@ function ChatBot({
   return token ? (
     <div>
       <LiveKitRoomWrapper
-        video={false}
-        audio={false}
+        video={isVideo}
+        audio={isAudio}
         token={token}
         connect={true}
         serverUrl={serverUrl}
