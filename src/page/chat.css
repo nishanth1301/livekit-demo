@@ -1,0 +1,10 @@
+.chatList {
+  height: 100vh;
+  background-color: rgb(233, 229, 229);
+}
+
+.icons {
+  font-size: 24px;
+  width: 50px;
+  margin: 0px 10px;
+}
