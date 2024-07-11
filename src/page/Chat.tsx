@@ -11,7 +11,7 @@ const Chat = () => {
           <Col xs={3}>
             <div className="chatList"></div>
           </Col>
-          <Col xs={8}>
+          <Col xs={9}>
             <ChatWindow />
           </Col>
         </Row>
