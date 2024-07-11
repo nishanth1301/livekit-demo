@@ -5,7 +5,6 @@ import "./App.css";
 import { Toaster } from "react-hot-toast";
 import ChatRoom from "./Chat/ChatRoom";
 import ChatBot from "./component/ChatBot";
-import UserCard from "./component/UserCard";
 
 function App() {
   const [roomName, setRoomName] = useState("");
@@ -51,12 +50,6 @@ function App() {
             />
             <button type="submit">Join Room</button>
           </form>
-          <UserCard
-            name={"Askar"}
-            picUrl="https://via.placeholder.com/150"
-            handleAcceptOrReject={() => {}}
-            toastId={"t.id"}
-          />
         </>
       )}
     </div>

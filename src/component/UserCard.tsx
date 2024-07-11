@@ -1,6 +1,6 @@
 import React from "react";
 import Avatar from "react-avatar";
-import { Card, Button, Row, Col } from "react-bootstrap";
+import { Card, Button, Row, Col, Form } from "react-bootstrap";
 import toast from "react-hot-toast";
 import { SlCallEnd, SlCallIn } from "react-icons/sl";
 
@@ -19,7 +19,7 @@ const UserCard = ({
   return (
     <Card
       style={{
-        width: "18rem",
+        width: "15rem",
         backgroundColor: "#F6F5F5",
         border: "none",
         boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px",
@@ -34,10 +34,12 @@ const UserCard = ({
               className="rounded-circle"
               style={{ width: "50px", height: "50px" }}
             /> */}
-            <Avatar value="76%" size="40" name={name} round={true} />
+            <Avatar value="76%" size="50" name={name} round={true} />
           </Col>
-          <Col>
-            <Card.Title>{name}</Card.Title>
+          <Col className="d-flex ">
+            <h5 style={{ fontSize: "1.8rem" }}>{name}</h5>
+
+            {/* <Card.Title style={{ fontSize: "1.8rem" }}>{name}</Card.Title> */}
           </Col>
         </Row>
         <Button
