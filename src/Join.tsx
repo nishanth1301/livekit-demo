@@ -1,8 +1,13 @@
 import React from "react";
 import { Toaster } from "react-hot-toast";
 import ChatRoom from "./Chat/ChatRoom";
-import ChatBot from "./component/ChatBot";
-import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
+import ChatBot from "./page/ChatBot";
+import {
+  Route,
+  BrowserRouter as Router,
+  Routes,
+  useNavigate,
+} from "react-router-dom";
 import Chat from "./page/Chat";
 import { useState } from "react";
 
@@ -15,8 +20,10 @@ const Join = () => {
     event.preventDefault();
     setIsJoined(true);
   };
+  const navigate = useNavigate();
   const handleDisconnect = () => {
     setIsJoined(false);
+    navigate("/");
   };
   return (
     <div className="App">

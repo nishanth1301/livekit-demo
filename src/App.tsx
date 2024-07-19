@@ -4,14 +4,12 @@ import "./App.css";
 // import ChatBot from "./component/ChatBot";
 import { Toaster } from "react-hot-toast";
 import ChatRoom from "./Chat/ChatRoom";
-import ChatBot from "./component/ChatBot";
+import ChatBot from "./page/ChatBot";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import Chat from "./page/Chat";
 import Join from "./Join";
 
 function App() {
-  const connect = () => {};
-  const disconnect = () => {};
   return (
     <Router>
       <Routes>

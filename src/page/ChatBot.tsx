@@ -2,8 +2,9 @@ import { LiveKitRoom } from "@livekit/components-react";
 import "@livekit/components-styles";
 import axios from "axios";
 import { useEffect, useState, useCallback } from "react";
-import SendMessage from "./SendMessage";
+import SendMessage from "../component/SendMessage";
 import toast from "react-hot-toast";
+import Chat from "./Chat";
 
 interface LiveKitRoomWrapperProps {
   video: boolean;
@@ -12,7 +13,7 @@ interface LiveKitRoomWrapperProps {
   connect: boolean;
   serverUrl: string;
   children?: React.ReactNode;
-  "data-lk-theme"?: string;
+  // "data-lk-theme"?: string;
   style?: React.CSSProperties;
 }
 
@@ -69,10 +70,14 @@ function ChatBot({
         token={token}
         connect={true}
         serverUrl={serverUrl}
-        data-lk-theme="default"
         style={{ flex: 1 }}
       >
-        <SendMessage
+        {/* <SendMessage
+          setAudio={setAudio}
+          setVideo={setVideo}
+          handleDisconnect={handleDisconnect}
+        /> */}
+        <Chat
           setAudio={setAudio}
           setVideo={setVideo}
           handleDisconnect={handleDisconnect}

@@ -63,6 +63,7 @@ function SendMessage({
   const remoteIdentity = remoteParticipant
     ? remoteParticipant.identity
     : "No remote participant connected";
+
   const handleIncomingCall = async (topic: string) => {
     setMode(topic as "video" | "audio" | "chat");
     if (remoteIdentity === "No remote participant connected") {

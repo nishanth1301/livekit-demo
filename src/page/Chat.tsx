@@ -3,7 +3,7 @@ import { Col, Row } from "react-bootstrap";
 import "./chat.css";
 import ChatWindow from "./ChatWindow";
 
-const Chat = () => {
+const Chat = ({ setVideo, setAudio, handleDisconnect }: any) => {
   return (
     <>
       <div className="container-fluid">
@@ -11,8 +11,12 @@ const Chat = () => {
           <Col xs={3}>
             <div className="chatList"></div>
           </Col>
-          <Col xs={8}>
-            <ChatWindow />
+          <Col xs={9}>
+            <ChatWindow
+              setAudio={setAudio}
+              setVideo={setVideo}
+              handleDisconnect={handleDisconnect}
+            />
           </Col>
         </Row>
       </div>
