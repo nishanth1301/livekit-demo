@@ -1,5 +1,7 @@
 import {
   CarouselLayout,
+  Chat,
+  ChatEntry,
   ControlBar,
   DisconnectButton,
   ParticipantTile,
@@ -187,6 +189,9 @@ const ChatWindow = ({ setVideo, setAudio, handleDisconnect }: any) => {
       {(mode === "audio" || mode === "video") && (
         <CallInterface mode={mode} tracks={tracks} />
       )}
+      <>
+        <Chat />
+      </>
     </div>
   );
 };

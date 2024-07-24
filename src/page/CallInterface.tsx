@@ -45,7 +45,7 @@ const CallInterface = ({ mode, tracks }: any) => {
           <ParticipantTile />
         </CarouselLayout>
       )}
-      {mode === "audio" && <RoomAudioRenderer />}
+      <RoomAudioRenderer />
     </div>
   );
 };
